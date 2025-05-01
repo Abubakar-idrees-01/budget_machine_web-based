@@ -60,11 +60,13 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card">
-                    <h1 class="text-center mb-2">Add Transaction Record for Today</h1>
+                    <h1 class="text-center mb-2">Add Today's Transaction</h1>
 <p class="text-center text-muted mb-4" >
     <strong>Note:</strong> Enter <span class="text-success">positive values</span> to <strong>add to your Record</strong> and <span class="text-danger">negative values</span> to <strong>deduct from your Record</strong>.
 </p>
-
+<p class="mt-2 text-success fw-semibold fs-5">
+    Current Balance: PKR {{ current_balance }}
+</p>
         {% if error %}
         <div class="alert alert-danger">{{ error }}</div>
         {% endif %}
@@ -72,19 +74,19 @@
         <form method="POST">
             {% csrf_token %}
             <div class="mb-3">
-                <label for="food_price" class="form-label">Food Price (PKR)</label>
+                <label for="food_price" class="form-label">Food Price (PKR) — Current: <strong>{{ existing_data.food_price }} </strong> </label>
                 <input type="number" class="form-control" id="food_price" name="food_price" value="0" >
             </div>
             <div class="mb-3">
-                <label for="traspotation_price" class="form-label">Transportation Price (PKR)</label>
+                <label for="traspotation_price" class="form-label">Transportation Price (PKR) — Current: <strong>{{ existing_data.traspotation_price }}</strong></label>
                 <input type="number" class="form-control" id="traspotation_price" name="traspotation_price" value="0" >
             </div>
             <div class="mb-3">
-                <label for="bill_price" class="form-label">Bill Price (PKR)</label>
+                <label for="bill_price" class="form-label">Bill Price (PKR) — Current: <strong>{{ existing_data.bill_price }}</strong></label>
                 <input type="number" class="form-control" id="bill_price" name="bill_price" value="0" >
             </div>
             <div class="mb-3">
-                <label for="other_price" class="form-label">Other Price (PKR)</label>
+                <label for="other_price" class="form-label">Bill Price (PKR) — Current: <strong>{{ existing_data.bill_price }}</strong></label>
                 <input type="number" class="form-control" id="other_price" name="other_price" value="0">
             </div>
         

@@ -168,15 +168,31 @@ class Record:
         user_data_folder = os.path.join(settings.BASE_DIR, 'user_data')
         user_file_path = os.path.join(user_data_folder, f"{user_id}.json")
 
-        # Get user's current balance
+        # Set defaults
         current_balance = 0
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        existing_data = {
+            "food_price": 0,
+            "traspotation_price": 0,
+            "bill_price": 0,
+            "other_price": 0
+        }
+
+        # Load existing data
         if os.path.exists(user_file_path):
             with open(user_file_path, 'r') as file:
                 user_data = json.load(file)
-                current_balance = user_data.get('total_balance', 0)
+                current_balance = user_data.get('total_budget', 0)
+                if today_date in user_data:
+                    today_data = user_data[today_date]
+                    existing_data = {
+                        "food_price": today_data.get("food_price", 0),
+                        "traspotation_price": today_data.get("traspotation_price", 0),
+                        "bill_price": today_data.get("bill_price", 0),
+                        "other_price": today_data.get("other_price", 0)
+                    }
 
         if request.method == "POST":
-            # Get the transaction values from the form
             food_price = int(request.POST.get('food_price', 0))
             traspotation_price = int(request.POST.get('traspotation_price', 0))
             bill_price = int(request.POST.get('bill_price', 0))
@@ -184,19 +200,17 @@ class Record:
 
             total_transaction_amount = food_price + traspotation_price + bill_price + other_price
 
-            # Check if total transaction amount is greater than the current balance
             if total_transaction_amount > current_balance:
                 error_message = "Total transaction amount cannot exceed your current balance."
-                return render(request, "transaction.html", {"error": error_message})
-
-            # If the amount is valid, update the record for today's date
-            today_date = datetime.now().strftime("%Y-%m-%d")
+                return render(request, "transaction.html", {
+                    "error": error_message,
+                    "existing_data": existing_data
+                })
 
             if os.path.exists(user_file_path):
                 with open(user_file_path, 'r') as file:
                     user_data = json.load(file)
 
-                # Update today's record or add a new one
                 if today_date not in user_data:
                     user_data[today_date] = {
                         "food_price": food_price,
@@ -212,18 +226,18 @@ class Record:
                     user_data[today_date]["other_price"] += other_price
                     user_data[today_date]["total_expense"] += total_transaction_amount
 
-                # Deduct the total transaction amount from the current balance and budget
                 user_data['total_budget'] -= total_transaction_amount
 
-                # Save the updated user data back to the file
                 with open(user_file_path, 'w') as file:
                     json.dump(user_data, file, indent=4)
 
-                return redirect('welcome')  # Redirect back to the welcome page
+                return redirect('welcome')
 
-        return render(request, "transaction.html")
-    
-    @login_required(login_url='sign_in')
+        return render(request, "transaction.html", {
+    "existing_data": existing_data,
+    "current_balance": current_balance
+})
+
     def view_transaction_chart(request):
         # Get the current user
         user = request.user

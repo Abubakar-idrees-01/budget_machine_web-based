@@ -90,10 +90,17 @@ class Auth:
 
     @login_required(login_url='sign_in')
     def delete_user( request):
-        user = request.user  # get the currently logged-in user
-        user.delete()        # delete the user
+        user = request.user  # Get the currently logged-in user
+        # Construct the path to the user's JSON data file
+        json_file_path = os.path.join(settings.BASE_DIR, 'user_data', f'{user.id}.json')
+        # Delete the JSON file if it exists
+        if os.path.exists(json_file_path):
+            os.remove(json_file_path)
+        # Delete the user account
+        user.delete()
+
         return redirect('home')
-    
+        
 
     @login_required(login_url='sign_in')
     def update_profile(request):
