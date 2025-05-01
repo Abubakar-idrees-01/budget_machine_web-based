@@ -1,0 +1,19 @@
+{
+    "total_balance": 4000,
+    "total_budget": 2000,
+    "2025-04-27": {
+        "food_price": 1000,
+        "traspotation_price": 200,
+        "bill_price": 300,
+        "other_price": 500,
+        "total_expense": 2000
+    },
+    "2025-04-29": {
+        "record": "Present",
+        "food_price": 0,
+        "traspotation_price": 0,
+        "bill_price": 0,
+        "other_price": 0,
+        "total_expense": 0
+    }
+}
