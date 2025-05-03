@@ -62,6 +62,9 @@
         .footer-link:hover {
             color: #79f6ff; /* Light Blue color on hover */
         }
+        .link-secondry {
+            font-size: 0.9rem;
+        }
 
     </style>
     <title>Sign In</title>
@@ -88,26 +91,36 @@
     <div class="sign-in-form">
         <div class="card">
             <h2 class="mb-4">Sign In</h2>
+        
             {% if error %}
             <div class="alert alert-danger" role="alert">
                 {{ error }}
             </div>
             {% endif %}
+        
             <form action="{% url 'sign_in' %}" method="post">
                 {% csrf_token %}
                 <div class="mb-3 text-start">
                     <label for="email" class="form-label">Email address</label>
                     <input type="email" name="email" class="form-control" id="email" placeholder="Enter your email" required>
                 </div>
-                <div class="mb-3 text-start">
+        
+                <div class="mb-2 text-start">
                     <label for="password" class="form-label">Password</label>
                     <div class="input-group">
                         <input type="password" name="password" class="form-control" id="password" placeholder="Enter your password" required>
                         <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">👁</button>
                     </div>
                 </div>
+        
+                <!-- Forgot password link -->
+                <div class="text-end mb-3">
+                    <a href="{% url 'forget_password' %}" class="mt-3" >Forgot Password?</a>
+                </div>
+        
                 <button type="submit" class="btn btn-success w-100">Sign In</button>
             </form>
+        
             <p class="mt-3">Don't have an account? <a href="/sign_up">Sign Up</a></p>
         </div>
     </div>

@@ -1,0 +1,51 @@
+{
+    "total_balance": 5000,
+    "total_budget": 3000,
+    "2025-05-04": {
+        "food_price": 1000,
+        "traspotation_price": 500,
+        "bill_price": 250,
+        "other_price": 250,
+        "total_expense": 2000,
+        "sended": [
+            {
+                "receiver_id": 20,
+                "amount": 500,
+                "timestamp": "2025-05-04 00:35:52",
+                "note": "Sent 500 to user_id 20 (ahmad) at 2025-05-04 00:35:52"
+            }
+        ],
+        "receive": [
+            {
+                "sender_id": 20,
+                "amount": 500,
+                "timestamp": "2025-05-04 00:43:48",
+                "note": "Received 500 from user_id 20 (ahmad) at 2025-05-04 00:43:48"
+            }
+        ],
+        "deposit": [
+            {
+                "amount": 10000,
+                "timestamp": "2025-05-04 00:21:28",
+                "note": "Deposited 10000 PKR on 2025-05-04 00:21:28"
+            },
+            {
+                "amount": 2500,
+                "timestamp": "2025-05-04 00:33:09",
+                "note": "Deposited 2500 PKR on 2025-05-04 00:33:09"
+            }
+        ],
+        "withdraw": [
+            {
+                "amount": 5000,
+                "timestamp": "2025-05-04 00:21:55",
+                "note": "Withdrew 5000 PKR on 2025-05-04 00:21:55"
+            },
+            {
+                "amount": 2500,
+                "timestamp": "2025-05-04 00:33:14",
+                "note": "Withdrew 2500 PKR on 2025-05-04 00:33:14"
+            }
+        ]
+    }
+}

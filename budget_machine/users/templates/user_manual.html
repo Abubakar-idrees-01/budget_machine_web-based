@@ -8,13 +8,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         .custom-navbar {
-            background-color: #29969e; /* Teal Green */
+            background-color: #29969e;
         }
         .nav-link {
             color: #ffffff;
         }
         .nav-link:hover {
-            color: #79f6ff; /* Light Blue */
+            color: #79f6ff;
         }
         body {
             background-color: #f4f4f4;
@@ -28,18 +28,18 @@
             color: #ffffff;
         }
         .custom-footer {
-            background-color: #29969e; 
-            color: #ffffff; 
+            background-color: #29969e;
+            color: #ffffff;
             position: relative;
             bottom: 0;
             width: 100%;
         }
         .footer-link {
-            color: #ffffff; 
-            text-decoration: none; 
+            color: #ffffff;
+            text-decoration: none;
         }
         .footer-link:hover {
-            color: #79f6ff; /* Light Blue color on hover */
+            color: #79f6ff;
         }
         .manual-section {
             padding: 40px 0;
@@ -64,20 +64,14 @@
             border: 1px solid #ddd;
             margin: 20px 0;
         }
-        .footer-link {
-            color: #ffffff;
-            text-decoration: none;
-        }
     </style>
 </head>
 <body>
-
-    <!-- Navbar -->
     <div class="pt-3 ps-3 custom-navbar w-100">
         <h1 class="heading1">Budget Machine</h1>
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link " aria-current="page" href="/">Home Page</a>
+                <a class="nav-link" aria-current="page" href="/">Home Page</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/about_us">About Us</a>
@@ -88,12 +82,9 @@
         </ul>
     </div>
 
-    <!-- User Manual Section -->
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
-
-                <!-- Introduction Section -->
                 <section class="manual-section">
                     <div class="card">
                         <h2 class="text-center mb-4">📄 User Manual</h2>
@@ -102,7 +93,6 @@
                     </div>
                 </section>
 
-                <!-- User Actions Section -->
                 <section class="manual-section">
                     <h3 class="section-heading">👥 User Actions</h3>
                     <div class="card">
@@ -114,13 +104,24 @@
                     </div>
                 </section>
 
-                <!-- Home Page Section -->
                 <section class="manual-section">
-                    <h3 class="section-heading">🏠 Home Page (Welcome Screen)</h3>
+                    <h3 class="section-heading">🔐 Forgot Password</h3>
+                    <div class="card">
+                        <p>If you've forgotten your password:</p>
+                        <ul>
+                            <li>Click the <em>Forgot Password?</em> link on the sign-in page.</li>
+                            <li>Enter your registered email.</li>
+                            <li>Follow the link sent to your email to reset your password.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="manual-section">
+                    <h3 class="section-heading">🏠 Home Page</h3>
                     <div class="card">
                         <p>Displays:</p>
                         <ul>
-                            <li>Greeting message (Morning, Afternoon, Evening)</li>
+                            <li>Greeting message</li>
                             <li>Total Budget and Remaining Balance</li>
                             <li>Navigation Buttons</li>
                         </ul>
@@ -133,91 +134,103 @@
                             <li>View Records (Date Wise)</li>
                             <li>View Transaction Chart</li>
                             <li>View Average Daily Spending</li>
+                            <li>Send Money</li>
+                            <li>Transaction History</li>
                             <li>Logout</li>
                         </ul>
                     </div>
                 </section>
 
-                <!-- Add Budget Section -->
-                <section class="manual-section">
-                    <h3 class="section-heading">💵 Add Budget</h3>
-                    <div class="card">
-                        <p>Enter the amount to add. Your Total Balance and Budget will increase.</p>
-                    </div>
-                </section>
-
-                <!-- Withdraw Amount Section -->
                 <section class="manual-section">
                     <h3 class="section-heading">💸 Withdraw Amount</h3>
                     <div class="card">
-                        <p>Enter the amount to withdraw. Your Balance and Budget will decrease.<br><strong>Note:</strong> Cannot withdraw more than available balance.</p>
+                        <p>Enter the amount to withdraw. This amount is deducted from your total budget.</p>
+                        <p><strong>Note:</strong> Cannot withdraw more than your available budget.</p>
                     </div>
                 </section>
 
-                <!-- Add Today's Transaction Section -->
                 <section class="manual-section">
-                    <h3 class="section-heading">🛒 Add Today's Transaction</h3>
+                    <h3 class="section-heading">💵 Add Budget</h3>
                     <div class="card">
-                        <p>Enter:</p>
-                        <ul>
-                            <li>Food Price</li>
-                            <li>Transportation Price</li>
-                            <li>Bill Price</li>
-                            <li>Other Expenses</li>
-                        </ul>
-                        <p><strong>Note:</strong>  Total must not exceed current balance. <br> Enter <span class="text-success">positive values</span> to <strong>add to your budget</strong> and <span class="text-danger">negative values</span> to <strong>deduct from your budget</strong>.</p>
-                       
+                        <p>Use this to deposit money to increase your total budget and balance.</p>
                     </div>
                 </section>
 
-                <!-- View Records Section -->
+                <section class="manual-section">
+                    <h3 class="section-heading">📤 Send Money</h3>
+                    <div class="card">
+                        <ul>
+                            <li>Enter the receiver's user ID.</li>
+                            <li>Enter amount and optional note.</li>
+                            <li>Click "Send" to transfer funds.</li>
+                        </ul>
+                        <p><strong>Note:</strong> Sent amount is deducted only from your budget.</p>
+                    </div>
+                </section>
+
+                <section class="manual-section">
+                    <h3 class="section-heading">📥 Received Money</h3>
+                    <div class="card">
+                        <p>When someone sends you money, it appears in your Received Transactions table and adds to your balance.</p>
+                    </div>
+                </section>
+
                 <section class="manual-section">
                     <h3 class="section-heading">📅 View Records</h3>
                     <div class="card">
-                        <p>View each day's transactions organized by date.</p>
+                        <p>Displays all daily transactions sorted by date.</p>
                     </div>
                 </section>
 
-                <!-- Transaction Chart Section -->
                 <section class="manual-section">
                     <h3 class="section-heading">📈 Transaction Chart</h3>
                     <div class="card">
-                        <p>Shows a graph of balance and expense trends using a Candle Chart.</p>
+                        <p>Shows your spending and balance trends in a visual chart.</p>
                     </div>
                 </section>
 
-                <!-- Average Spending Section -->
                 <section class="manual-section">
-                    <h3 class="section-heading">📊 View Average Spending</h3>
+                    <h3 class="section-heading">📊 Average Daily Spending</h3>
                     <div class="card">
-                        <p>Displays average daily spending amount.</p>
+                        <p>View your average spending across all recorded days.</p>
                     </div>
                 </section>
 
-                <!-- Logout Section -->
+                <section class="manual-section">
+                    <h3 class="section-heading">📋 Transaction History</h3>
+                    <div class="card">
+                        <p>Displays 4 tables with all transaction types:</p>
+                        <ul>
+                            <li>Deposits</li>
+                            <li>Withdrawals</li>
+                            <li>Sent Transactions</li>
+                            <li>Received Transactions</li>
+                        </ul>
+                        <p>Each entry shows amount, note, and timestamp.</p>
+                    </div>
+                </section>
+
                 <section class="manual-section">
                     <h3 class="section-heading">🚪 Logout</h3>
                     <div class="card">
-                        <p>Click Logout to securely exit your account.</p>
+                        <p>Click "Logout" to securely end your session.</p>
                     </div>
                 </section>
 
-                <!-- Important Rules Section -->
                 <section class="manual-section">
-                    <h3 class="section-heading">⚙️ Important Rules</h3>
+                    <h3 class="section-heading">⚙️ Rules</h3>
                     <div class="card">
                         <ul>
-                            <li>Cannot withdraw or spend more money than available balance.</li>
-                            <li>Each date is created automatically when you log in that day.</li>
-                            <li>Your data is securely saved under your account only.</li>
+                            <li>You cannot withdraw or send more than your available budget.</li>
+                            <li>Dates are auto-created daily upon login.</li>
+                            <li>All data is securely stored under your personal account.</li>
                         </ul>
                     </div>
                 </section>
 
-                <!-- Thank You Section -->
                 <section class="manual-section">
                     <div class="card">
-                        <h2 class="text-center mt-4">🙌 Thank You for Using the Expense Tracker!</h2>
+                        <h2 class="text-center mt-4">🙌 Thank You for Using Budget Machine!</h2>
                         <p class="text-center">Manage your money smartly. 💰</p>
                     </div>
                 </section>
@@ -225,16 +238,14 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="custom-footer">
         <div class="container text-center py-4">
             <p class="mb-0">&copy; 2025 Budget Machine. All rights reserved.</p>
             <p>
-                <a href="/about_us" class="footer-link">About Us</a>  | 
-                <a href="/" class="footer-link">Home Page</a>  
+                <a href="/about_us" class="footer-link">About Us</a> |
+                <a href="/" class="footer-link">Home Page</a>
             </p>
         </div>
     </footer>
-
 </body>
 </html>

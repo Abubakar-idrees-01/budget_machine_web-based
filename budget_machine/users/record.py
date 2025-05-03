@@ -1,9 +1,11 @@
 
 from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 import os
 import json
-from datetime import datetime
+from datetime import datetime, date
 from django.conf import settings
 class Record:
     @login_required(login_url='sign_in')
@@ -25,8 +27,9 @@ class Record:
             with open(user_file_path, 'r') as file:
                 user_data = json.load(file)
 
-            # Read total_balance from file
+            # Read total_balance and total_budget from file
             total_balance = user_data.get('total_balance', 0)
+            total_budget = user_data.get('total_budget', 0)
 
             # Ensure today's date exists
             today_date = datetime.now().strftime("%Y-%m-%d")
@@ -37,7 +40,11 @@ class Record:
                     "traspotation_price": 0,
                     "bill_price": 0,
                     "other_price": 0,
-                    "total_expense": 0
+                    "total_expense": 0,
+                    "sended": [],
+                    "receive": [],
+                    "deposit":[],
+                    "withdraw":[]
                 }
                 with open(user_file_path, 'w') as file:
                     json.dump(user_data, file, indent=4)
@@ -49,9 +56,6 @@ class Record:
                 if isinstance(value, dict) and 'total_expense' in value
             ]
             total_expenses_sum = sum(all_expenses)
-
-            # Recalculate total_budget
-            total_budget = total_balance - total_expenses_sum
 
             # Calculate average daily spending
             if all_expenses:
@@ -76,7 +80,6 @@ class Record:
             "average_spent": average_spent,
         })
 
-
     @login_required(login_url='sign_in')
     def view_all_records(request):
         user = request.user
@@ -100,7 +103,7 @@ class Record:
         return render(request, "view_all_records.html", {"records_data": records_data})
     
     @login_required(login_url='sign_in')
-    def add_budget(request):
+    def add_budget(request): 
         if request.method == "POST":
             added_amount = int(request.POST.get('budget', 0))
 
@@ -114,16 +117,41 @@ class Record:
                 with open(user_file_path, 'r') as file:
                     user_data = json.load(file)
 
-                # 👇 Add amount to total_balance (Total amount added)
+                # Update balances
                 user_data['total_balance'] = user_data.get('total_balance', 0) + added_amount
-
-                # 👇 Also add to total_budget (Remaining balance)
                 user_data['total_budget'] = user_data.get('total_budget', 0) + added_amount
 
+                # Prepare today's date
+                today = datetime.now().strftime("%Y-%m-%d")
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+                # Ensure today's entry exists
+                if today not in user_data:
+                    user_data[today] = {
+                        "food_price": 0,
+                        "traspotation_price": 0,
+                        "bill_price": 0,
+                        "other_price": 0,
+                        "total_expense": 0,
+                        "sended": [],
+                        "receive": [],
+                        "deposit": [],
+                        "withdraw": []
+                    }
+
+                # Append deposit record
+                deposit_note = f"Deposited {added_amount} PKR on {timestamp}"
+                user_data[today]['deposit'].append({
+                    "amount": added_amount,
+                    "timestamp": timestamp,
+                    "note": deposit_note
+                })
+
+                # Save the updated data
                 with open(user_file_path, 'w') as file:
                     json.dump(user_data, file, indent=4)
 
-            return redirect('welcome')  # Go back to welcome page after adding budget
+            return redirect('welcome')  # Go back to welcome page
 
         return render(request, "add_budget.html")
     
@@ -145,24 +173,49 @@ class Record:
                 total_budget = user_data.get('total_budget', 0)
 
                 if withdraw_value > total_budget:
-                    # ❌ Withdrawal is greater than remaining balance
                     return render(request, "withdraw_amount.html", {
                         "error": "Cannot withdraw more than your remaining balance."
                     })
 
-                # ✅ Proceed with withdrawal
+                # Deduct from balances
                 user_data['total_balance'] = max(0, user_data.get('total_balance', 0) - withdraw_value)
                 user_data['total_budget'] = max(0, total_budget - withdraw_value)
+
+                # Today's date and timestamp
+                today = datetime.now().strftime("%Y-%m-%d")
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+                # Ensure today's date key exists
+                if today not in user_data:
+                    user_data[today] = {
+                        "food_price": 0,
+                        "traspotation_price": 0,
+                        "bill_price": 0,
+                        "other_price": 0,
+                        "total_expense": 0,
+                        "sended": [],
+                        "receive": [],
+                        "deposit": [],
+                        "withdraw": []
+                    }
+
+                # Append to withdraw log
+                withdraw_note = f"Withdrew {withdraw_value} PKR on {timestamp}"
+                user_data[today]['withdraw'].append({
+                    "amount": withdraw_value,
+                    "timestamp": timestamp,
+                    "note": withdraw_note
+                })
 
                 with open(user_file_path, 'w') as file:
                     json.dump(user_data, file, indent=4)
 
-            return redirect('welcome')  # after withdrawing, go back to welcome page
+            return redirect('welcome')
 
         return render(request, "withdraw_amount.html")
     
     @login_required(login_url='sign_in')
-    def transaction(request):
+    def record(request):
         user = request.user
         user_id = user.id
         user_data_folder = os.path.join(settings.BASE_DIR, 'user_data')
@@ -198,11 +251,11 @@ class Record:
             bill_price = int(request.POST.get('bill_price', 0))
             other_price = int(request.POST.get('other_price', 0))
 
-            total_transaction_amount = food_price + traspotation_price + bill_price + other_price
+            total_record_amount = food_price + traspotation_price + bill_price + other_price
 
-            if total_transaction_amount > current_balance:
-                error_message = "Total transaction amount cannot exceed your current balance."
-                return render(request, "transaction.html", {
+            if total_record_amount > current_balance:
+                error_message = "Total record amount cannot exceed your current balance."
+                return render(request, "record.html", {
                     "error": error_message,
                     "existing_data": existing_data
                 })
@@ -217,28 +270,29 @@ class Record:
                         "traspotation_price": traspotation_price,
                         "bill_price": bill_price,
                         "other_price": other_price,
-                        "total_expense": total_transaction_amount
+                        "total_expense": total_record_amount
                     }
                 else:
                     user_data[today_date]["food_price"] += food_price
                     user_data[today_date]["traspotation_price"] += traspotation_price
                     user_data[today_date]["bill_price"] += bill_price
                     user_data[today_date]["other_price"] += other_price
-                    user_data[today_date]["total_expense"] += total_transaction_amount
+                    user_data[today_date]["total_expense"] += total_record_amount
 
-                user_data['total_budget'] -= total_transaction_amount
+                user_data['total_budget'] -= total_record_amount
 
                 with open(user_file_path, 'w') as file:
                     json.dump(user_data, file, indent=4)
 
                 return redirect('welcome')
 
-        return render(request, "transaction.html", {
+        return render(request, "record.html", {
     "existing_data": existing_data,
     "current_balance": current_balance
 })
 
-    def view_transaction_chart(request):
+    @login_required(login_url='sign_in')
+    def view_record_chart(request):
         # Get the current user
         user = request.user
         user_id = user.id
@@ -265,9 +319,171 @@ class Record:
             total_budget = 0
 
         # Pass the data to the template
-        return render(request, 'transaction_chart.html', {
+        return render(request, 'record_chart.html', {
             'daily_data': json.dumps(daily_data),
             'categories': json.dumps(categories),
             'total_balance': total_balance,
             'total_budget': total_budget,
+        })
+    
+    @login_required(login_url='sign_in')
+    def send_money(request):
+        if request.method == "POST":
+            sender = request.user
+            sender_id = sender.id
+            sender_username = sender.username
+
+            sender_data_folder = os.path.join(settings.BASE_DIR, 'user_data')
+            sender_file_path = os.path.join(sender_data_folder, f"{sender_id}.json")
+
+            # Load sender data
+            if not os.path.exists(sender_file_path):
+                return render(request, "send_money.html", {"error": "Sender data not found."})
+
+            with open(sender_file_path, 'r') as file:
+                sender_data = json.load(file)
+
+            sender_balance = sender_data.get('total_balance', 0)
+            sender_budget = sender_data.get('total_budget', 0)
+
+            # Get POST data
+            receiver_id = int(request.POST.get('receiver_id'))
+            amount = int(request.POST.get('amount'))
+            today = datetime.now().strftime("%Y-%m-%d")
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            # Prevent sending to self
+            if receiver_id == sender_id:
+                return render(request, "send_money.html", {"error": "You cannot send money to yourself."})
+
+            # Validate amount
+            if amount > sender_balance or amount > sender_budget:
+                return render(request, "send_money.html", {"error": "Insufficient balance or budget."})
+
+            # Check if receiver exists in User model
+            try:
+                receiver_user = User.objects.get(id=receiver_id)
+            except User.DoesNotExist:
+                return render(request, "send_money.html", {"error": "Receiver ID not found."})
+
+            receiver_username = receiver_user.username
+            receiver_file_path = os.path.join(sender_data_folder, f"{receiver_id}.json")
+
+            if not os.path.exists(receiver_file_path):
+                return render(request, "send_money.html", {"error": "Receiver data file not found."})
+
+            # Load receiver data
+            with open(receiver_file_path, 'r') as file:
+                receiver_data = json.load(file)
+
+            # Update sender balance
+            sender_data['total_balance'] -= amount
+            sender_data['total_budget'] -= amount
+            if today not in sender_data:
+                sender_data[today] = {
+                    "food_price": 0,
+                    "traspotation_price": 0,
+                    "bill_price": 0,
+                    "other_price": 0,
+                    "total_expense": 0,
+                    "sended": [],
+                    "receive": [],
+                    "deposit":[],
+                    "withdraw":[]
+                }
+
+            sender_data[today]['sended'].append({
+                "receiver_id": receiver_id,
+                "amount": amount,
+                "timestamp": timestamp,
+                "note": f"Sent {amount} to user_id {receiver_id} ({receiver_username}) at {timestamp}"
+            })
+
+            # Update receiver balance
+            receiver_data['total_balance'] += amount
+            receiver_data['total_budget'] += amount
+            if today not in receiver_data:
+                receiver_data[today] = {
+                    "food_price": 0,
+                    "traspotation_price": 0,
+                    "bill_price": 0,
+                    "other_price": 0,
+                    "total_expense": 0,
+                    "sended": [],
+                    "receive": [],
+                    "deposit":[],
+                    "withdraw":[]
+                }
+
+            receiver_data[today]['receive'].append({
+                "sender_id": sender_id,
+                "amount": amount,
+                "timestamp": timestamp,
+                "note": f"Received {amount} from user_id {sender_id} ({sender_username}) at {timestamp}"
+            })
+
+            # Save updated files
+            with open(sender_file_path, 'w') as file:
+                json.dump(sender_data, file, indent=4)
+
+            with open(receiver_file_path, 'w') as file:
+                json.dump(receiver_data, file, indent=4)
+
+            return render(request, "send_money.html", {"success": "Money sent successfully!"})
+
+        return render(request, "send_money.html")
+
+    @login_required(login_url='sign_in')
+    def transaction_history(request):
+        user = request.user
+        user_id = user.id
+        user_data_folder = os.path.join(settings.BASE_DIR, 'user_data')
+        user_file_path = os.path.join(user_data_folder, f"{user_id}.json")
+
+        if not os.path.exists(user_file_path):
+            return render(request, "transaction_history.html", {"error": "No transaction history found."})
+
+        with open(user_file_path, 'r') as file:
+            user_data = json.load(file)
+
+        # Initialize the filtered data for all transaction types
+        filtered_data = {
+            'withdraw': [],
+            'deposit': [],
+            'sended': [],
+            'received': []
+        }
+
+        # Collect withdrawal transactions
+        for date, details in user_data.items():
+            if isinstance(details, dict) and 'withdraw' in details:
+                filtered_data['withdraw'].extend(details['withdraw'])
+
+        # Collect deposit transactions
+        for date, details in user_data.items():
+            if isinstance(details, dict) and 'deposit' in details:
+                filtered_data['deposit'].extend(details['deposit'])
+
+        # Collect sent transactions
+        for date, details in user_data.items():
+            if isinstance(details, dict) and 'sended' in details:
+                filtered_data['sended'].extend(details['sended'])
+
+        # Collect received transactions
+        for date, details in user_data.items():
+            if isinstance(details, dict) and 'receive' in details:
+                filtered_data['received'].extend(details['receive'])
+
+        # Sort all transaction types by timestamp (most recent first)
+        filtered_data['withdraw'] = sorted(filtered_data['withdraw'], key=lambda x: x['timestamp'], reverse=True)
+        filtered_data['deposit'] = sorted(filtered_data['deposit'], key=lambda x: x['timestamp'], reverse=True)
+        filtered_data['sended'] = sorted(filtered_data['sended'], key=lambda x: x['timestamp'], reverse=True)
+        filtered_data['received'] = sorted(filtered_data['received'], key=lambda x: x['timestamp'], reverse=True)
+
+        return render(request, "transaction_history.html", {
+            "withdraws": filtered_data['withdraw'],
+            "deposits": filtered_data['deposit'],
+            "sended": filtered_data['sended'],
+            "received": filtered_data['received'],
+            "name": user.first_name.title()
         })

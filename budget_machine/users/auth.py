@@ -76,7 +76,11 @@ class Auth:
                     "traspotation_price": 0,
                     "bill_price": 0,
                     "other_price": 0,
-                    "total_expense": 0
+                    "total_expense": 0,
+                    "sended":[],
+                    "receive":[],
+                    "deposit":[],
+                    "withdraw":[]
                 }
             }
 
@@ -100,7 +104,6 @@ class Auth:
         user.delete()
 
         return redirect('home')
-        
 
     @login_required(login_url='sign_in')
     def update_profile(request):
@@ -144,6 +147,50 @@ class Auth:
                 return redirect("welcome")
 
         return render(request, "update_profile.html", {"user": user})      
+    
+    def forget_password(request):
+        if request.method == 'POST':
+            user_id = request.POST.get('user_id')
+            username = request.POST.get('username')
+            email = request.POST.get('email')
+
+            try:
+                user = User.objects.get(id=user_id, username=username, email=email)
+                # Redirect to reset password page with user id in session
+                request.session['reset_user_id'] = user.id
+                return redirect('reset_password')  # URL name for password reset form
+            except User.DoesNotExist:
+                return render(request, 'forget_password.html', {
+                    'error': 'Invalid credentials provided.'
+                })
+
+        return render(request, 'forget_password.html')
+    
+    def reset_password(request):
+        user_id = request.session.get('reset_user_id')
+
+        if not user_id:
+            return redirect('forget_password')  # User didn’t come from valid flow
+
+        if request.method == 'POST':
+            new_password = request.POST.get('new_password')
+            confirm_password = request.POST.get('confirm_password')
+
+            if new_password != confirm_password:
+                return render(request, 'reset_password.html', {
+                    'error': 'Passwords do not match.'
+                })
+
+            try:
+                user = User.objects.get(id=user_id)
+                user.set_password(new_password)
+                user.save()
+                del request.session['reset_user_id']  # Clear session
+                return redirect('sign_in')
+            except User.DoesNotExist:
+                return redirect('forget_password')
+
+        return render(request, 'reset_password.html')
     
     @csrf_exempt
     @require_http_methods(["GET", "POST"])
