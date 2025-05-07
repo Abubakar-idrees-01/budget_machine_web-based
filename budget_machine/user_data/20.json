@@ -1,40 +1,26 @@
 {
-    "total_balance": 500,
-    "total_budget": 500,
-    "2025-05-04": {
-        "food_price": 0,
-        "traspotation_price": 0,
-        "bill_price": 0,
-        "other_price": 0,
-        "total_expense": 0,
-        "sended": [
-            {
-                "receiver_id": 19,
-                "amount": 500,
-                "timestamp": "2025-05-04 00:43:48",
-                "note": "Sent 500 to user_id 19 (ali) at 2025-05-04 00:43:48"
-            }
-        ],
-        "receive": [
-            {
-                "sender_id": 19,
-                "amount": 500,
-                "timestamp": "2025-05-04 00:35:52",
-                "note": "Received 500 from user_id 19 (ali) at 2025-05-04 00:35:52"
-            }
-        ],
+    "total_balance": 5000,
+    "total_budget": 3790,
+    "2025-05-07": {
+        "food_price": 1000,
+        "transportation_price": 100,
+        "bill_price": 10,
+        "other_price": 100,
+        "total_expense": 1210,
+        "sended": [],
+        "receive": [],
         "deposit": [
             {
-                "amount": 1000,
-                "timestamp": "2025-05-04 00:43:24",
-                "note": "Deposited 1000 PKR on 2025-05-04 00:43:24"
+                "amount": 10000,
+                "timestamp": "2025-05-07 21:21:53",
+                "note": "Deposited 10000 PKR on 2025-05-07 21:21:53"
             }
         ],
         "withdraw": [
             {
-                "amount": 500,
-                "timestamp": "2025-05-04 00:43:30",
-                "note": "Withdrew 500 PKR on 2025-05-04 00:43:30"
+                "amount": 5000,
+                "timestamp": "2025-05-07 21:21:57",
+                "note": "Withdrew 5000 PKR on 2025-05-07 21:21:57"
             }
         ]
     }

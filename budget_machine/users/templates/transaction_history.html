@@ -31,7 +31,6 @@
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            text-align: center;
             background: #ffffff;
         }
         .custom-footer {
@@ -46,7 +45,7 @@
             text-decoration: none;
         }
         .footer-link:hover {
-            color: #79f6ff; /* Light Blue color on hover */
+            color: #79f6ff;
         }
         table {
             width: 100%;
@@ -74,6 +73,17 @@
             color: #888;
             font-style: italic;
         }
+
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 1rem !important;
+            }
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
     </style>
 </head>
 <body>
@@ -85,7 +95,7 @@
         <div class="row justify-content-center">
             <div class="col-md-10">
                 <div class="card">
-                    <div class="container mt-5">
+                    <div class="card-body px-2">
                         
                         <h2>Deposit Transactions</h2>
                         <table class="table table-striped">
@@ -130,6 +140,7 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+
                         <h2>Sent Transactions</h2>
                         <table class="table table-striped">
                             <thead>
@@ -179,7 +190,7 @@
                         </table>
 
                         <div class="text-center mt-4">
-                            <a href="{% url 'welcome' %}" class="btn btn-primary">Back to Welcome Page</a>
+                            <a href="{% url 'welcome' %}" class="btn btn-primary w-100">Back to Welcome Page</a>
                         </div>
                     </div>
                 </div>

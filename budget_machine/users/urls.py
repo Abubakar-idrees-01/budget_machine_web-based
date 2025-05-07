@@ -21,4 +21,5 @@ urlpatterns = [
     path('view_record_chart/', record.Record.view_record_chart , name='view_record_chart'),
      path('send_money/', record.Record.send_money, name='send_money'),
      path('transaction_history/', record.Record.transaction_history, name='transaction_history'),
+     path('get_username/<int:receiver_id>/', record.Record.get_username, name='get_username'),
 ]

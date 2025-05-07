@@ -10,30 +10,67 @@ from datetime import datetime
 from django.conf import settings
 import os
 import json
+import pyttsx3
 class Auth:
-    
+    def speak(text):
+        engine = pyttsx3.init()
+        engine.say(text)
+        engine.runAndWait()
     @staticmethod
+    
     def sign_in(request):
         if request.method == "POST":
             email = request.POST.get("email").lower()
             password = request.POST.get("password")
 
-            # Check if email exists
             try:
                 user = User.objects.get(email=email)
             except User.DoesNotExist:
                 return render(request, "sign_in.html", {"error": "Email does not exist."})
 
-            # Authenticate using username (Django uses username by default)
             user = authenticate(request, username=user.username, password=password)
-            
+
             if user is not None:
                 login(request, user)
-                return redirect("welcome") 
+
+                # Get today's date in YYYY-MM-DD format
+                today_date = datetime.today().strftime('%Y-%m-%d')
+
+                # Check or create user JSON file
+                json_filename = f"{user.id}.json"
+                json_path = os.path.join(settings.BASE_DIR, "user_data", json_filename)
+
+                if not os.path.exists(json_path):
+                    os.makedirs(os.path.dirname(json_path), exist_ok=True)
+
+                    # Initial data structure with today's date
+                    initial_data = {
+                        "total_balance": 0,
+                        "total_budget": 0,
+                        today_date: {  # Dynamic date key
+                            "food_price": 0,
+                            "transportation_price": 0,
+                            "bill_price": 0,
+                            "other_price": 0,
+                            "total_expense": 0,
+                            "sended": [],
+                            "receive": [],
+                            "deposit": [],
+                            "withdraw": []
+                        }
+                    }
+
+                    # Write to the JSON file
+                    with open(json_path, "w") as json_file:
+                        json.dump(initial_data, json_file, indent=4)
+
+                Auth.speak("Welcome Sir!")
+                return redirect("welcome")
             else:
                 return render(request, "sign_in.html", {"error": "Incorrect password."})
 
         return render(request, "sign_in.html")
+
     @staticmethod
     def sign_up(request):
         if request.method == "POST":
@@ -73,7 +110,7 @@ class Auth:
                 "total_budget": 0,
                 f"{date}": {
                     "food_price": 0,
-                    "traspotation_price": 0,
+                    'transportation_price': 0,
                     "bill_price": 0,
                     "other_price": 0,
                     "total_expense": 0,
@@ -196,6 +233,10 @@ class Auth:
     @require_http_methods(["GET", "POST"])
     def sign_out(request):
         logout(request)
+        print("if not")
+        Auth.speak("Goodbye Sir")
         if request.headers.get("Accept") == "*/*":  # Beacon case
+            Auth.Record.speak("Goodbye Sir")
+            print("if not yes")
             return HttpResponse("Logged out via beacon", status=200)
         return redirect("sign_in")

@@ -64,27 +64,44 @@
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="card">
-                    <h1 class="center-aligned-text">All Records</h1>
+                <div class="card p-4">
+                    <h1 class="text-center mb-4">All Records</h1>
     
                     {% if records_data %}
                         {% for date, details in records_data.items %}
-                            <div class="mb-3">
-                                <h5 class="left-aligned-text">{{ date }}</h5>
-                                <p class="left-aligned-text">
-                                    food_price: {{ details.food_price }},
-                                    transportation_price: {{ details.transportation_price }},
-                                    bill_price: {{ details.bill_price }},
-                                    other_price: {{ details.other_price }},
-                                    total_expense: {{ details.total_expense }}
-                                </p>
+                            <div class="mb-4">
+                                <h5 class="text-start">{{ date }}</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped mt-2">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Food</th>
+                                                <th>Transportation</th>
+                                                <th>Bill</th>
+                                                <th>Other</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{{ details.food_price }}</td>
+                                                <td>{{ details.transportation_price }}</td>
+                                                <td>{{ details.bill_price }}</td>
+                                                <td>{{ details.other_price }}</td>
+                                                <td>{{ details.total_expense }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         {% endfor %}
                     {% else %}
-                        <p>No records found!</p>
+                        <p class="text-center">No records found!</p>
                     {% endif %}
-                
-                    <a href="{% url 'welcome' %}" class="btn btn-primary mt-4">Back to Home</a>
+    
+                    <div class="text-center">
+                        <a href="{% url 'welcome' %}" class="btn btn-primary w-100 ">Back to Home</a>
+                    </div>
                 </div>
             </div>
         </div>

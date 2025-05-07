@@ -100,7 +100,7 @@
                             <button type="button" class="toggle-password" onclick="togglePassword('new_password', this)">👁️</button>
                         </div>
                     
-                        <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+                        <button type="submit" class="btn btn-success w-100">Update Profile</button>
                     
                         {% if error %}
                             <p class="error-message">{{ error }}</p>
@@ -109,7 +109,7 @@
                             <p class="success-message">{{ success }}</p>
                         {% endif %}
                     
-                        <a href="{% url 'welcome' %}" class="btn btn-secondary w-100 mt-3">Return to Welcome Page</a>
+                        <a href="{% url 'welcome' %}" class="btn btn-primary w-100 mt-3">Return to Welcome Page</a>
                     </form>
                 </div>
             </div>
