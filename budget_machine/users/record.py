@@ -1,4 +1,3 @@
-
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -6,79 +5,76 @@ from django.http import JsonResponse
 from django.contrib import messages
 import os
 import json
+from django.utils import timezone
 from datetime import datetime, date
 from django.conf import settings
 
 
-
 class Record:
-    
-    
+   
     @login_required(login_url='sign_in')
     def welcome(request):
         user = request.user
         capitalized_name = user.first_name.title()
         user_id = user.id
-        
 
-        # Default values
-        total_balance = 0
-        total_budget = 0
-        average_spent = 0
-
-        # File path
+        # Ensure user_data directory exists
         user_data_folder = os.path.join(settings.BASE_DIR, 'user_data')
+        os.makedirs(user_data_folder, exist_ok=True)
+
         user_file_path = os.path.join(user_data_folder, f"{user_id}.json")
 
+        # Initialize defaults
+        total_balance = 0
+        total_budget = 0
+        average_spent = 0.0
+
+        # Load or create user data
         if os.path.exists(user_file_path):
-            with open(user_file_path, 'r') as file:
-                user_data = json.load(file)
+            with open(user_file_path, 'r') as f:
+                user_data = json.load(f)
+        else:
+            user_data = {}
 
-            # Read total_balance and total_budget from file
-            total_balance = user_data.get('total_balance', 0)
-            total_budget = user_data.get('total_budget', 0)
+        # Read balance & budget
+        total_balance = user_data.get('total_balance', 0)
+        total_budget   = user_data.get('total_budget', 0)
 
-            # Ensure today's date exists
-            today_date = datetime.now().strftime("%Y-%m-%d")
-            if today_date not in user_data:
-                user_data[today_date] = {
-                    "record": "Present",
-                    "food_price": 0,
-                    'transportation_price': 0,
-                    "bill_price": 0,
-                    "other_price": 0,
-                    "total_expense": 0,
-                    "sended": [],
-                    "receive": [],
-                    "deposit":[],
-                    "withdraw":[]
-                }
-                with open(user_file_path, 'w') as file:
-                    json.dump(user_data, file, indent=4)
+        # Ensure today's record exists
+        today_str = timezone.localdate().isoformat()
+        if today_str not in user_data:
+            user_data[today_str] = {
+                "record": "Present",
+                "food_price": 0,
+                "transportation_price": 0,
+                "bill_price": 0,
+                "other_price": 0,
+                "total_expense": 0,
+                "sended": [],
+                "receive": [],
+                "deposit": [],
+                "withdraw": []
+            }
+            with open(user_file_path, 'w') as f:
+                json.dump(user_data, f, indent=4)
 
-            # Calculate total of all expenses
-            all_expenses = [
-                value.get('total_expense', 0)
-                for key, value in user_data.items()
-                if isinstance(value, dict) and 'total_expense' in value
-            ]
-            total_expenses_sum = sum(all_expenses)
+        # Compute average daily spending
+        expenses = [
+            day.get('total_expense', 0)
+            for key, day in user_data.items()
+            if isinstance(day, dict) and 'total_expense' in day
+        ]
+        if expenses:
+            average_spent = round(sum(expenses) / len(expenses), 2)
 
-            # Calculate average daily spending
-            if all_expenses:
-                average_spent = round(total_expenses_sum / len(all_expenses), 2)
-
-        # Greeting message
-        now = datetime.now()
-        current_hour = now.hour
+        # Time-zone–aware greeting
+        current_hour = timezone.localtime(timezone.now()).hour
         if current_hour < 12:
             greeting = "Good Morning"
         elif current_hour < 18:
             greeting = "Good Afternoon"
         else:
             greeting = "Good Evening"
-        
-        
 
         return render(request, "welcome.html", {
             "user": user,

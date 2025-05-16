@@ -1,0 +1,15 @@
+{
+    "total_balance": 0,
+    "total_budget": 0,
+    "2025-05-10": {
+        "food_price": 0,
+        "transportation_price": 0,
+        "bill_price": 0,
+        "other_price": 0,
+        "total_expense": 0,
+        "sended": [],
+        "receive": [],
+        "deposit": [],
+        "withdraw": []
+    }
+}

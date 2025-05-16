@@ -1,6 +1,6 @@
 {
-    "total_balance": 500,
-    "total_budget": 500,
+    "total_balance": 1500,
+    "total_budget": 1500,
     "2025-05-07": {
         "food_price": 0,
         "transportation_price": 0,
@@ -23,6 +23,24 @@
                 "note": "Deposited 1000 PKR on 2025-05-07 20:57:57"
             }
         ],
+        "withdraw": []
+    },
+    "2025-05-08": {
+        "food_price": 0,
+        "transportation_price": 0,
+        "bill_price": 0,
+        "other_price": 0,
+        "total_expense": 0,
+        "sended": [],
+        "receive": [
+            {
+                "sender_id": 19,
+                "amount": 1000,
+                "timestamp": "2025-05-08 22:57:32",
+                "note": "Received 1000 from user_id 19 (ali) at 2025-05-08 22:57:32"
+            }
+        ],
+        "deposit": [],
         "withdraw": []
     }
 }

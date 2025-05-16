@@ -1,6 +1,6 @@
 {
-    "total_balance": 5300,
-    "total_budget": 4300,
+    "total_balance": 4300,
+    "total_budget": 3000,
     "2025-05-07": {
         "food_price": 200,
         "transportation_price": 172,
@@ -189,6 +189,49 @@
         "bill_price": 95,
         "other_price": 85,
         "total_expense": 545,
+        "sended": [],
+        "receive": [],
+        "deposit": [],
+        "withdraw": []
+    },
+    "2025-05-08": {
+        "record": "Present",
+        "food_price": 100,
+        "transportation_price": 0,
+        "bill_price": 50,
+        "other_price": 150,
+        "total_expense": 300,
+        "sended": [
+            {
+                "receiver_id": 29,
+                "amount": 1000,
+                "timestamp": "2025-05-08 22:57:32",
+                "note": "Sent 1000 to user_id 29 (happy) at 2025-05-08 22:57:32"
+            }
+        ],
+        "receive": [],
+        "deposit": [],
+        "withdraw": []
+    },
+    "2025-05-10": {
+        "record": "Present",
+        "food_price": 0,
+        "transportation_price": 0,
+        "bill_price": 0,
+        "other_price": 0,
+        "total_expense": 0,
+        "sended": [],
+        "receive": [],
+        "deposit": [],
+        "withdraw": []
+    },
+    "2025-05-13": {
+        "record": "Present",
+        "food_price": 0,
+        "transportation_price": 0,
+        "bill_price": 0,
+        "other_price": 0,
+        "total_expense": 0,
         "sended": [],
         "receive": [],
         "deposit": [],

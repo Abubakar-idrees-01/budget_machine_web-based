@@ -10,14 +10,9 @@ from datetime import datetime
 from django.conf import settings
 import os
 import json
-import pyttsx3
 class Auth:
-    def speak(text):
-        engine = pyttsx3.init()
-        engine.say(text)
-        engine.runAndWait()
-    @staticmethod
     
+    @staticmethod
     def sign_in(request):
         if request.method == "POST":
             email = request.POST.get("email").lower()
@@ -29,6 +24,7 @@ class Auth:
                 return render(request, "sign_in.html", {"error": "Email does not exist."})
 
             user = authenticate(request, username=user.username, password=password)
+            # user=True
 
             if user is not None:
                 login(request, user)
@@ -44,7 +40,7 @@ class Auth:
                     os.makedirs(os.path.dirname(json_path), exist_ok=True)
 
                     # Initial data structure with today's date
-                    initial_data = {
+                    initial_data = {    
                         "total_balance": 0,
                         "total_budget": 0,
                         today_date: {  # Dynamic date key
@@ -63,8 +59,6 @@ class Auth:
                     # Write to the JSON file
                     with open(json_path, "w") as json_file:
                         json.dump(initial_data, json_file, indent=4)
-
-                Auth.speak("Welcome Sir!")
                 return redirect("welcome")
             else:
                 return render(request, "sign_in.html", {"error": "Incorrect password."})
@@ -90,6 +84,10 @@ class Auth:
             # 3. Password match check
             if password != confirm_password:
                 return render(request, "sign_up.html", {"error": "Passwords do not match."})
+
+            # 3.5 Password length check
+            if len(password) < 8:
+                return render(request, "sign_up.html", {"error": "Password must be at least 8 characters long."})
 
             # 4. Create user
             user = User.objects.create_user(username=name, email=email, password=password, first_name=name)
@@ -147,44 +145,64 @@ class Auth:
         user = request.user
 
         if request.method == "POST":
-            name = request.POST.get("name").strip().lower()
-            email = request.POST.get("email").strip().lower()
-            current_password = request.POST.get("current_password")
-            new_password = request.POST.get("new_password")
+            name = request.POST.get("name", "").strip().lower()
+            email = request.POST.get("email", "").strip().lower()
+            current_password = request.POST.get("current_password", "")
+            new_password = request.POST.get("new_password", "")
 
-            # Check current password
+            # Verify current password
             if not user.check_password(current_password):
-                return render(request, "update_profile.html", {"error": "Incorrect current password.", "user": user})
-
+                return render(request, "update_profile.html", {
+                    "error": "Incorrect current password.",
+                    "user": user
+                })
+            
             changes_made = False
 
-            # Update name if changed and not empty
+            # Check name uniqueness before applying
             if name and name != user.first_name:
+                if User.objects.filter(username=name).exclude(id=user.id).exists():
+                    return render(request, "update_profile.html", {
+                        "error": "Name is already taken by another user.",
+                        "user": user
+                    })
+                if len(name) < 3:
+                    return render(request, "update_profile.html", {
+                        "error": "Name must be at least 3 characters long.",
+                        "user": request.user
+                    })
                 user.first_name = name
-                user.username = name  # Optional: If you want username same as name
+                user.username = name  # keep username in sync
                 changes_made = True
 
-            # Update email if changed and not empty
+            # Check email uniqueness
             if email and email != user.email:
                 if User.objects.filter(email=email).exclude(id=user.id).exists():
-                    return render(request, "update_profile.html", {"error": "Email already in use.", "user": user})
+                    return render(request, "update_profile.html", {
+                        "error": "Email already in use.",
+                        "user": user
+                    })
                 user.email = email
                 changes_made = True
 
-            # Update password if new_password provided
+            # Update password if requested
             if new_password:
                 user.set_password(new_password)
-                update_session_auth_hash(request, user)  # Keep user logged in after password change
+                update_session_auth_hash(request, user)
                 changes_made = True
 
             if changes_made:
                 user.save()
-                return render(request, "update_profile.html", {"success": "Profile updated successfully.", "user": user})
+                return render(request, "update_profile.html", {
+                    "success": "Profile updated successfully.",
+                    "user": user
+                })
             else:
                 return redirect("welcome")
 
-        return render(request, "update_profile.html", {"user": user})      
-    
+        return render(request, "update_profile.html", {"user": user})
+        
+    @login_required(login_url='sign_in')
     def forget_password(request):
         if request.method == 'POST':
             user_id = request.POST.get('user_id')
@@ -203,6 +221,7 @@ class Auth:
 
         return render(request, 'forget_password.html')
     
+    @login_required(login_url='sign_in')
     def reset_password(request):
         user_id = request.session.get('reset_user_id')
 
@@ -234,9 +253,9 @@ class Auth:
     def sign_out(request):
         logout(request)
         print("if not")
-        Auth.speak("Goodbye Sir")
+        
         if request.headers.get("Accept") == "*/*":  # Beacon case
-            Auth.Record.speak("Goodbye Sir")
+            
             print("if not yes")
             return HttpResponse("Logged out via beacon", status=200)
         return redirect("sign_in")
